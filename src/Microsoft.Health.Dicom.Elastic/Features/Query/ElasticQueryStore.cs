@@ -7,61 +7,100 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Core.Features.Model;
 using Microsoft.Health.Dicom.Core.Features.Query;
 using Microsoft.Health.Dicom.Core.Features.Query.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Health.Dicom.Elastic.Features.Query
 {
-    public class ElasticQueryStore : IQueryStore
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA5400", Justification = "Not production code.")]
+    public sealed class ElasticQueryStore : IQueryStore, IDisposable
     {
-        private IHttpClientFactory _httpClientFactory;
+        private HttpClient _httpClientFactory;
+        private HttpClientHandler _handler;
 
-        public ElasticQueryStore(IHttpClientFactory httpClientFactory)
+        private static readonly IReadOnlyDictionary<DicomTag, string> tagMapping = new Dictionary<DicomTag, string>()
         {
-            _httpClientFactory = EnsureArg.IsNotNull(httpClientFactory, nameof(httpClientFactory));
+            { DicomTag.StudyInstanceUID, "studyInstanceUID" },
+            { DicomTag.StudyDate, "studyDate" },
+            { DicomTag.StudyDescription, "studyDescription" },
+            { DicomTag.AccessionNumber, "accessionNumber" },
+            { DicomTag.PatientID, "patientId" },
+            { DicomTag.PatientName, "patientName" },
+            { DicomTag.ReferringPhysicianName, "referringPhysicianName" },
+            { DicomTag.SeriesInstanceUID, "seriesInstanceUID" },
+            { DicomTag.Modality, "modality" },
+            { DicomTag.PerformedProcedureStepStartDate, "performedProcedureStepStartDate" },
+            { DicomTag.SOPInstanceUID, "sopInstanceUID" },
+        };
+
+        public ElasticQueryStore()
+        {
+            _handler = new HttpClientHandler()
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            _httpClientFactory = new HttpClient(_handler);
         }
 
         public async Task<QueryResult> QueryAsync(QueryExpression query, CancellationToken cancellationToken = default)
         {
             EnsureArg.IsNotNull(query, nameof(query));
 
-            var matchToken = new JObject();
-            var paramsToken = new JObject();
+            var matchToken = new Dictionary<string, string>();
+            var paramsToken = new Dictionary<string, string>();
             foreach (SingleValueMatchCondition<string> filterCondition in query.FilterConditions)
             {
-                matchToken.Add(filterCondition.QueryTag.Tag.ToString(), $"{{filterCondition.QueryTag.Tag.ToString()}}");
-                paramsToken.Add(filterCondition.QueryTag.Tag.ToString(), filterCondition.Value);
+                matchToken.Add(tagMapping[filterCondition.QueryTag.Tag], $"{{{{{tagMapping[filterCondition.QueryTag.Tag]}}}}}");
+                paramsToken.Add(tagMapping[filterCondition.QueryTag.Tag], filterCondition.Value);
             }
 
-            var mainObject = new JObject
+            var mainObject = new
             {
+                Source = new
                 {
-                    "source",
-                    new JObject
+                    Query = new
                     {
-                        {
-                            "query",
-                            new JObject
-                            {
-                                {"match", matchToken}
-                            }
-                        }
+                        Match = matchToken
                     }
                 },
-                {"params", paramsToken}
+                Params = paramsToken,
             };
 
-            using HttpClient httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri("https://localhost:9200");
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic","YWRtaW46YWRtaW4=");
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    ProcessDictionaryKeys = true,
+                }
+            };
+            string json = JsonConvert.SerializeObject(mainObject, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
+            Console.Write(json);
 
-            using var stringContent = new StringContent(mainObject.ToString());
-            var result = await httpClient.PutAsync(new Uri("/instance/_search/template"), stringContent , cancellationToken);
+            _httpClientFactory.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic","YWRtaW46YWRtaW4=");
+
+            using var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("https://localhost:9200/instance/_search/template"),
+                Content = stringContent,
+            };
+            var result = await _httpClientFactory.SendAsync(request, cancellationToken);
 
             JObject jsonResult = JObject.Parse(await result.Content.ReadAsStringAsync(cancellationToken));
 
@@ -70,14 +109,20 @@ namespace Microsoft.Health.Dicom.Elastic.Features.Query
             {
                 foreach (JObject hitItem in (JArray)jsonResult.SelectToken("hits.hits"))
                 {
-                    string studyInstanceUid = (string)hitItem.SelectToken("_source.studyInstanceUid");
-                    string seriesInstanceUid = (string)hitItem.SelectToken("_source.seriesInstanceUid");
-                    string sopInstanceUid = (string)hitItem.SelectToken("_source.sopInstanceUid");
+                    string studyInstanceUid = (string)hitItem.SelectToken("_source.studyInstanceUID");
+                    string seriesInstanceUid = (string)hitItem.SelectToken("_source.seriesInstanceUID");
+                    string sopInstanceUid = (string)hitItem.SelectToken("_source.sopInstanceUID");
 
                     resultList.Add(new VersionedInstanceIdentifier(studyInstanceUid, seriesInstanceUid, sopInstanceUid, 1));
                 }
             }
             return new QueryResult(resultList);
+        }
+
+        public void Dispose()
+        {
+            _httpClientFactory?.Dispose();
+            _handler?.Dispose();
         }
     }
 }

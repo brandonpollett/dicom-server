@@ -30,6 +30,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AsSelf()
                 .AsImplementedInterfaces();
 
+            services.Add<ElasticIndexDataStoreFactory>()
+                .Scoped()
+                .AsSelf()
+                .AsImplementedInterfaces();
+
             return dicomServerBuilder;
         }
     }
