@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Health.Dicom.Pin.CosmosDb.Registration;
 using Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
 
-namespace Microsoft.Health.Dicom.Pin.Orchestrator;
+namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
 
 internal static class Program
 {
@@ -20,6 +20,7 @@ internal static class Program
                 serviceCollection.AddHostedService<Worker>();
                 serviceCollection.AddCosmosDb(hostContext.Configuration);
                 serviceCollection.AddServiceBus(hostContext.Configuration);
+                serviceCollection.AddHttpClient();
             })
             .RunConsoleAsync();
 

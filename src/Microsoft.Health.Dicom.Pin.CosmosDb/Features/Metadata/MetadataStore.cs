@@ -27,7 +27,7 @@ public class MetadataStore : IMetadataStore
 
     public async Task<Account> GetAccountAsync(string id, CancellationToken cancellationToken)
     {
-        var sqlQueryText = $"SELECT * FROM c WHERE c.Type = '{AccountCosmosDb.DocumentType}' and c.Id = '{id}'";
+        var sqlQueryText = $"SELECT * FROM c WHERE c.type = '{AccountCosmosDb.DocumentType}' and c.id = '{id}'";
 
         QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
         using FeedIterator<AccountCosmosDb> queryResultSetIterator = _container.GetItemQueryIterator<AccountCosmosDb>(queryDefinition);
@@ -48,7 +48,7 @@ public class MetadataStore : IMetadataStore
 
     public async Task<Inference> GetInferenceAsync(string id, CancellationToken cancellationToken)
     {
-        var sqlQueryText = $"SELECT * FROM c WHERE c.Type = '{InferenceCosmosDb.DocumentType}' and c.Id = '{id}'";
+        var sqlQueryText = $"SELECT * FROM c WHERE c.type = '{InferenceCosmosDb.DocumentType}' and c.id = '{id}'";
 
         QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
         using FeedIterator<InferenceCosmosDb> queryResultSetIterator = _container.GetItemQueryIterator<InferenceCosmosDb>(queryDefinition);
@@ -69,7 +69,7 @@ public class MetadataStore : IMetadataStore
 
     public async Task<IEnumerable<Inference>> GetInferencesAsync(string accountId, CancellationToken cancellationToken)
     {
-        var sqlQueryText = $"SELECT * FROM c WHERE c.Type = '{InferenceCosmosDb.DocumentType}' and c.AcountId = '{accountId}'";
+        var sqlQueryText = $"SELECT * FROM c WHERE c.type = '{InferenceCosmosDb.DocumentType}' and c.accountId = '{accountId}'";
 
         QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
         using FeedIterator<InferenceCosmosDb> queryResultSetIterator = _container.GetItemQueryIterator<InferenceCosmosDb>(queryDefinition);

@@ -9,6 +9,7 @@ public class Inference
 {
     public string Id { get; set; }
     public string AccountId { get; set; }
+
     public string Name { get; set; }
     public Uri Uri { get; set; }
 }
