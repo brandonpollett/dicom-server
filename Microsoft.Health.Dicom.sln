@@ -83,6 +83,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.FellowOakDicom", "forks\Microsoft.Health.FellowOakDicom\Microsoft.Health.FellowOakDicom.csproj", "{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.InferenceWorker", "src\Microsoft.Health.Dicom.Pin.InferenceWorker\Microsoft.Health.Dicom.Pin.InferenceWorker.csproj", "{072E03F0-1C97-4FAE-8E0B-6144395806C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.ServiceBus", "src\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj", "{50054045-54A8-434F-B56B-661607197A41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -213,6 +217,14 @@ Global
 		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Debug|x64.Build.0 = Debug|x64
 		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Release|x64.ActiveCfg = Release|x64
 		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Release|x64.Build.0 = Release|x64
+		{072E03F0-1C97-4FAE-8E0B-6144395806C0}.Debug|x64.ActiveCfg = Debug|x64
+		{072E03F0-1C97-4FAE-8E0B-6144395806C0}.Debug|x64.Build.0 = Debug|x64
+		{072E03F0-1C97-4FAE-8E0B-6144395806C0}.Release|x64.ActiveCfg = Release|x64
+		{072E03F0-1C97-4FAE-8E0B-6144395806C0}.Release|x64.Build.0 = Release|x64
+		{50054045-54A8-434F-B56B-661607197A41}.Debug|x64.ActiveCfg = Debug|x64
+		{50054045-54A8-434F-B56B-661607197A41}.Debug|x64.Build.0 = Debug|x64
+		{50054045-54A8-434F-B56B-661607197A41}.Release|x64.ActiveCfg = Release|x64
+		{50054045-54A8-434F-B56B-661607197A41}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -248,6 +260,8 @@ Global
 		{4CC57D24-62BC-48C4-AC67-6A62596C399D} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24} = {AEDC6C96-15FF-4AFB-BD49-3549211AACCF}
+		{072E03F0-1C97-4FAE-8E0B-6144395806C0} = {176641B3-297C-4E04-A83D-8F80F80485E8}
+		{50054045-54A8-434F-B56B-661607197A41} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_SortFileContentOnSave = True

@@ -15,4 +15,6 @@ internal class InferenceCosmosDb : Inference
 #pragma warning disable CA1051
     public string Type = DocumentType;
 #pragma warning restore CA1051
+
+    public string PartitionKey => AccountId;
 }
