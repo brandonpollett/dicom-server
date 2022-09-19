@@ -24,6 +24,7 @@ using Microsoft.Health.Dicom.Core.Features.Store.Entries;
 using Microsoft.Health.Dicom.Core.Features.Validation;
 using Microsoft.Health.Dicom.Core.Features.Workitem;
 using Microsoft.Health.Extensions.DependencyInjection;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
 
 namespace Microsoft.Health.Dicom.Core.Modules;
 
@@ -173,6 +174,8 @@ public class ServiceModule : IStartupModule
         AddWorkItemServices(services);
 
         AddExportServices(services);
+
+        services.AddServiceBus(null);
     }
 
     private static void AddExtendedQueryTagServices(IServiceCollection services)

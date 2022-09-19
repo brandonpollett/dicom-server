@@ -51,6 +51,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\forks\Microsoft.Health.FellowOakDicom\Microsoft.Health.FellowOakDicom.csproj" />
+    <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

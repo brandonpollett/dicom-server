@@ -10,17 +10,20 @@ using FellowOakDicom;
 using Microsoft.Health.Dicom.Core.Extensions;
 using Microsoft.Health.Dicom.Core.Features.Routing;
 using Microsoft.Health.Dicom.Core.Features.Workitem;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
 
 namespace Microsoft.Health.Dicom.Core.Features;
 public class AutoInferenceInitiator : IAutoInferenceInitiator
 {
     private readonly IUrlResolver _urlResolver;
     private readonly IWorkitemService _workitemService;
+    private readonly ServiceBusOrchestratorStore _serviceBusOrchestratorStore;
 
-    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService)
+    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService, ServiceBusOrchestratorStore serviceBusOrchestratorStore)
     {
         _urlResolver = urlResolver;
         _workitemService = workitemService;
+        _serviceBusOrchestratorStore = serviceBusOrchestratorStore;
     }
 
     public async void QueueInferenceRequest(DicomDataset dicomDataset)
@@ -30,7 +33,7 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         string workItemInstanceUid = DicomUID.Generate().UID;
         await _workitemService.ProcessAddAsync(CreateWorkItemDataset(dicomDataset), workItemInstanceUid, cancellationToken: CancellationToken.None);
 
-        // todo queue a message with the WI Id
+        await _serviceBusOrchestratorStore.WriteRequestAsync(new Pin.Core.Messages.OrchestratorRequest { WorkItemId = workItemInstanceUid }, CancellationToken.None);
     }
 
     private DicomDataset CreateWorkItemDataset(DicomDataset inputDataset)
