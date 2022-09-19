@@ -3,10 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Azure.Messaging.ServiceBus;
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
 using Microsoft.Health.Dicom.Pin.Core.Models;
@@ -15,31 +15,27 @@ namespace Microsoft.Health.Dicom.Pin.Orchestrator;
 
 public class Worker : BackgroundService
 {
-    private readonly ServiceBusReceiver _orchestratorReceiver;
-    private readonly ServiceBusSender _inferenceRequester;
     private readonly IMetadataStore _metadataStore;
+    private readonly IOrchestratorStore _orchestratorStore;
     private readonly ILogger<Worker> _logger;
+    private readonly IInferenceStore _inferenceStore;
 
-    public Worker(ServiceBusClient serviceBusClient, IMetadataStore metadataStore, ILogger<Worker> logger)
+    public Worker(IMetadataStore metadataStore, IOrchestratorStore orchestratorStore, IInferenceStore inferenceStore, ILogger<Worker> logger)
     {
-        EnsureArg.IsNotNull(serviceBusClient, nameof(serviceBusClient));
         _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
+        _orchestratorStore = EnsureArg.IsNotNull(orchestratorStore, nameof(orchestratorStore));
+        _inferenceStore = EnsureArg.IsNotNull(inferenceStore, nameof(inferenceStore));
         _logger = EnsureArg.IsNotNull(logger, nameof(logger));
-
-        _orchestratorReceiver = serviceBusClient.CreateReceiver("OrchestratorRequest");
-        _inferenceRequester = serviceBusClient.CreateSender("InferenceRequest");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            ServiceBusReceivedMessage receivedMessage = await _orchestratorReceiver.ReceiveMessageAsync(cancellationToken: stoppingToken);
+            OrchestratorRequest orchestratorRequest = await _orchestratorStore.GetRequestAsync(stoppingToken);
 
-            if (receivedMessage != null)
+            if (orchestratorRequest != null)
             {
-                OrchestratorRequest orchestratorRequest = receivedMessage.Body.ToObjectFromJson<OrchestratorRequest>();
-
                 IEnumerable<Inference> inferences = await _metadataStore.GetInferencesAsync(orchestratorRequest.AccountId, stoppingToken);
 
                 var inferenceRequests = inferences.Select(inference => new InferenceRequest
@@ -50,19 +46,18 @@ public class Worker : BackgroundService
                     SeriesUid = orchestratorRequest.SeriesUid,
                     InstanceUid = orchestratorRequest.InstanceUid,
                 })
-                .Select(inferenceRequest => new ServiceBusMessage(BinaryData.FromObjectAsJson(inferenceRequest)))
                 .ToList();
 
                 if (inferenceRequests.Any())
                 {
-                    await _inferenceRequester.SendMessagesAsync(inferenceRequests, stoppingToken);
+                    await _inferenceStore.WriteRequestsAsync(inferenceRequests, stoppingToken);
                 }
                 else
                 {
                     _logger.LogInformation("No inferences found for account {AccountId}", orchestratorRequest.AccountId);
                 }
 
-                await _orchestratorReceiver.CompleteMessageAsync(receivedMessage, stoppingToken);
+                await _orchestratorStore.CompleteRequestAsync(orchestratorRequest, stoppingToken);
             }
             else
             {

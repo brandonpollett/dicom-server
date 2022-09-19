@@ -3,46 +3,41 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Azure.Messaging.ServiceBus;
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
+using Microsoft.Health.Dicom.Pin.Core.Models;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
 
 public class Worker : BackgroundService
 {
     private readonly IMetadataStore _metadataStore;
-    private readonly ServiceBusReceiver _inferenceReceiver;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ServiceBusSender _inferenceResponder;
+    private readonly IInferenceStore _inferenceStore;
 
-    public Worker(ServiceBusClient serviceBusClient, IMetadataStore metadataStore, IHttpClientFactory httpClientFactory)
+    public Worker(IMetadataStore metadataStore, IInferenceStore inferenceStore, IHttpClientFactory httpClientFactory)
     {
-        EnsureArg.IsNotNull(serviceBusClient, nameof(serviceBusClient));
         _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
+        _inferenceStore = EnsureArg.IsNotNull(inferenceStore, nameof(inferenceStore));
         _httpClientFactory = EnsureArg.IsNotNull(httpClientFactory, nameof(httpClientFactory));
-
-        _inferenceReceiver = serviceBusClient.CreateReceiver("InferenceRequest");
-        _inferenceResponder = serviceBusClient.CreateSender("InferenceResponse");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            ServiceBusReceivedMessage item = await _inferenceReceiver.ReceiveMessageAsync(cancellationToken: stoppingToken);
+            InferenceRequest inferenceRequest = await _inferenceStore.GetRequestAsync(cancellationToken: stoppingToken);
 
-            if (item != null)
+            if (inferenceRequest != null)
             {
-                var inferenceRequest = item.Body.ToObjectFromJson<InferenceRequest>();
-
-                var inferenceItem = await _metadataStore.GetInferenceAsync(inferenceRequest.InferenceId, stoppingToken);
+                Inference inferenceItem = await _metadataStore.GetInferenceAsync(inferenceRequest.InferenceId, stoppingToken);
 
                 using HttpClient client = _httpClientFactory.CreateClient();
                 using var content = new StringContent(string.Empty);
-                var response = await client.PostAsync(inferenceItem.Uri, content, stoppingToken);
+                HttpResponseMessage response = await client.PostAsync(inferenceItem.Uri, content, stoppingToken);
 
                 var inferenceResponse = new InferenceResponse
                 {
@@ -54,9 +49,9 @@ public class Worker : BackgroundService
                     StatusCode = response.StatusCode.ToString(),
                 };
 
-                await _inferenceResponder.SendMessageAsync(new ServiceBusMessage(BinaryData.FromObjectAsJson(inferenceResponse)), stoppingToken);
+                await _inferenceStore.WriteResponseAsync(inferenceResponse, stoppingToken);
 
-                await _inferenceReceiver.CompleteMessageAsync(item, stoppingToken);
+                await _inferenceStore.CompleteRequestAsync(inferenceRequest, stoppingToken);
             }
             else
             {

@@ -7,7 +7,10 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Inference;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
 using Microsoft.Health.Dicom.Pin.ServiceBus.Options;
+using Microsoft.Health.Extensions.DependencyInjection;
 
 namespace Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
 
@@ -22,6 +25,14 @@ public static class ServiceBusRegistrationExtensions
             IOptionsMonitor<ServiceBusOptions> dbOptions = sp.GetRequiredService<IOptionsMonitor<ServiceBusOptions>>();
             return new ServiceBusClient(dbOptions.CurrentValue.ConnectionString);
         });
+
+        serviceCollection.Add<ServiceBusInferenceStore>()
+            .Singleton()
+            .AsImplementedInterfaces();
+
+        serviceCollection.Add<ServiceBusOrchestratorStore>()
+            .Singleton()
+            .AsImplementedInterfaces();
 
         return serviceCollection;
     }
