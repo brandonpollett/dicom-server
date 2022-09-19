@@ -7,6 +7,8 @@ namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
 public class InferenceResponse
 {
+    public string MessageId { get; set; }
+
     public string AccountId { get; set; }
 
     public string InferenceId { get; set; }

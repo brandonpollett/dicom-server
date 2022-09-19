@@ -7,6 +7,7 @@ namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
 public class InferenceRequest
 {
+    public string MessageId { get; set; }
     public string AccountId { get; set; }
     public string InferenceId { get; set; }
     public string StudyUid { get; set; }

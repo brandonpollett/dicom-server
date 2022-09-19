@@ -11,7 +11,7 @@ public interface IMetadataStore
 {
     Task<Account> GetAccountAsync(string id, CancellationToken cancellationToken);
 
-    Task<Inference> GetInferenceAsync(string id, CancellationToken cancellationToken);
+    Task<Models.Inference> GetInferenceAsync(string id, CancellationToken cancellationToken);
 
-    Task<IEnumerable<Inference>> GetInferencesAsync(string accountId, CancellationToken cancellationToken);
+    Task<IEnumerable<Models.Inference>> GetInferencesAsync(string accountId, CancellationToken cancellationToken);
 }

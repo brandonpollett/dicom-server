@@ -3,13 +3,13 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Pin.Core.Messages;
+using Microsoft.Health.Dicom.Pin.Core.Messages;
 
-public class OrchestratorRequest
+namespace Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
+
+public interface IOrchestratorStore
 {
-    public string MessageId { get; set; }
-    public string AccountId { get; set; }
-    public string StudyUid { get; set; }
-    public string SeriesUid { get; set; }
-    public string InstanceUid { get; set; }
+    Task<OrchestratorRequest> GetRequestAsync(CancellationToken cancellationToken);
+
+    Task CompleteRequestAsync(OrchestratorRequest request, CancellationToken cancellationToken);
 }
