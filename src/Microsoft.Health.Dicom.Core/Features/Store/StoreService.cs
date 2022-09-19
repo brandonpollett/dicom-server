@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ public class StoreService : IStoreService
     private readonly IStoreOrchestrator _storeOrchestrator;
     private readonly IDicomRequestContextAccessor _dicomRequestContextAccessor;
     private readonly ILogger _logger;
-
+    private readonly IAutoInferenceInitiator _autoInferenceInitiator;
     private IReadOnlyList<IDicomInstanceEntry> _dicomInstanceEntries;
     private string _requiredStudyInstanceUid;
 
@@ -68,13 +68,15 @@ public class StoreService : IStoreService
         IStoreDatasetValidator dicomDatasetValidator,
         IStoreOrchestrator storeOrchestrator,
         IDicomRequestContextAccessor dicomRequestContextAccessor,
-        ILogger<StoreService> logger)
+        ILogger<StoreService> logger,
+        IAutoInferenceInitiator autoInferenceInitiator)
     {
         _storeResponseBuilder = EnsureArg.IsNotNull(storeResponseBuilder, nameof(storeResponseBuilder));
         _dicomDatasetValidator = EnsureArg.IsNotNull(dicomDatasetValidator, nameof(dicomDatasetValidator));
         _storeOrchestrator = EnsureArg.IsNotNull(storeOrchestrator, nameof(storeOrchestrator));
         _dicomRequestContextAccessor = EnsureArg.IsNotNull(dicomRequestContextAccessor, nameof(dicomRequestContextAccessor));
         _logger = EnsureArg.IsNotNull(logger, nameof(logger));
+        _autoInferenceInitiator = autoInferenceInitiator;
     }
 
     /// <inheritdoc />
@@ -94,6 +96,7 @@ public class StoreService : IStoreService
                 try
                 {
                     await ProcessDicomInstanceEntryAsync(index, cancellationToken);
+
                 }
                 finally
                 {
@@ -102,6 +105,8 @@ public class StoreService : IStoreService
 
                     _ = Task.Run(() => DisposeResourceAsync(capturedIndex), CancellationToken.None);
                 }
+                var dicomDataset = await _dicomInstanceEntries[index].GetDicomDatasetAsync(cancellationToken);
+                _autoInferenceInitiator.QueueInferenceRequest(dicomDataset);
             }
         }
 

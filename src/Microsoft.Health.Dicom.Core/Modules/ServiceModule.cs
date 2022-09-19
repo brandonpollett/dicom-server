@@ -6,6 +6,7 @@
 using EnsureThat;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Health.Dicom.Core.Features;
 using Microsoft.Health.Dicom.Core.Features.ChangeFeed;
 using Microsoft.Health.Dicom.Core.Features.Common;
 using Microsoft.Health.Dicom.Core.Features.Delete;
@@ -162,6 +163,10 @@ public class ServiceModule : IStartupModule
             .Singleton()
             .AsSelf()
             .AsImplementedInterfaces();
+
+        services.Add<AutoInferenceInitiator>()
+            .Scoped()
+            .AsSelf();
 
         AddExtendedQueryTagServices(services);
 
