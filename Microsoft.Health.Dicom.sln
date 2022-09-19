@@ -75,7 +75,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "forks", "forks", "{AEDC6C96
 		forks\.globalconfig = forks\.globalconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.FellowOakDicom", "forks\Microsoft.Health.FellowOakDicom\Microsoft.Health.FellowOakDicom.csproj", "{ADD2B971-3C5C-429A-B954-A55FA0FA987D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.Core", "src\Microsoft.Health.Dicom.Pin.Core\Microsoft.Health.Dicom.Pin.Core.csproj", "{14338B48-9D64-43CA-B1AA-F2410D90527B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.CosmosDb", "src\Microsoft.Health.Dicom.Pin.CosmosDb\Microsoft.Health.Dicom.Pin.CosmosDb.csproj", "{4CC57D24-62BC-48C4-AC67-6A62596C399D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.Orchestrator", "src\Microsoft.Health.Dicom.Pin.Orchestrator\Microsoft.Health.Dicom.Pin.Orchestrator.csproj", "{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.FellowOakDicom", "forks\Microsoft.Health.FellowOakDicom\Microsoft.Health.FellowOakDicom.csproj", "{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -191,6 +197,22 @@ Global
 		{ADD2B971-3C5C-429A-B954-A55FA0FA987D}.Debug|x64.Build.0 = Debug|x64
 		{ADD2B971-3C5C-429A-B954-A55FA0FA987D}.Release|x64.ActiveCfg = Release|x64
 		{ADD2B971-3C5C-429A-B954-A55FA0FA987D}.Release|x64.Build.0 = Release|x64
+		{14338B48-9D64-43CA-B1AA-F2410D90527B}.Debug|x64.ActiveCfg = Debug|x64
+		{14338B48-9D64-43CA-B1AA-F2410D90527B}.Debug|x64.Build.0 = Debug|x64
+		{14338B48-9D64-43CA-B1AA-F2410D90527B}.Release|x64.ActiveCfg = Release|x64
+		{14338B48-9D64-43CA-B1AA-F2410D90527B}.Release|x64.Build.0 = Release|x64
+		{4CC57D24-62BC-48C4-AC67-6A62596C399D}.Debug|x64.ActiveCfg = Debug|x64
+		{4CC57D24-62BC-48C4-AC67-6A62596C399D}.Debug|x64.Build.0 = Debug|x64
+		{4CC57D24-62BC-48C4-AC67-6A62596C399D}.Release|x64.ActiveCfg = Release|x64
+		{4CC57D24-62BC-48C4-AC67-6A62596C399D}.Release|x64.Build.0 = Release|x64
+		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C}.Debug|x64.ActiveCfg = Debug|x64
+		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C}.Debug|x64.Build.0 = Debug|x64
+		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C}.Release|x64.ActiveCfg = Release|x64
+		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C}.Release|x64.Build.0 = Release|x64
+		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Debug|x64.ActiveCfg = Debug|x64
+		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Debug|x64.Build.0 = Debug|x64
+		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Release|x64.ActiveCfg = Release|x64
+		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -222,6 +244,10 @@ Global
 		{C8BB8AF3-DCD1-49A4-A082-9152686AD222} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 		{7AE5FC7B-CE2D-4B5A-B8BB-9B673469EA88} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 		{ADD2B971-3C5C-429A-B954-A55FA0FA987D} = {AEDC6C96-15FF-4AFB-BD49-3549211AACCF}
+		{14338B48-9D64-43CA-B1AA-F2410D90527B} = {176641B3-297C-4E04-A83D-8F80F80485E8}
+		{4CC57D24-62BC-48C4-AC67-6A62596C399D} = {176641B3-297C-4E04-A83D-8F80F80485E8}
+		{466E2AEE-36E8-4DF4-9C4E-13540AFC1B3C} = {176641B3-297C-4E04-A83D-8F80F80485E8}
+		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24} = {AEDC6C96-15FF-4AFB-BD49-3549211AACCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_SortFileContentOnSave = True
