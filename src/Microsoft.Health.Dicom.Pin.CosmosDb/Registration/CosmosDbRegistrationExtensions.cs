@@ -7,7 +7,9 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Health.Dicom.Pin.CosmosDb.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.CosmosDb.Options;
+using Microsoft.Health.Extensions.DependencyInjection;
 
 namespace Microsoft.Health.Dicom.Pin.CosmosDb.Registration;
 
@@ -22,6 +24,10 @@ public static class CosmosDbRegistrationExtensions
             IOptionsMonitor<CosmosDbOptions> dbOptions = sp.GetRequiredService<IOptionsMonitor<CosmosDbOptions>>();
             return new CosmosClient(dbOptions.CurrentValue.ConnectionString);
         });
+
+        services.Add<MetadataStore>()
+            .Singleton()
+            .AsImplementedInterfaces();
 
         return services;
     }

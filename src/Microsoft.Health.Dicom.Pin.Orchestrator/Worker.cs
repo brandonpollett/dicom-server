@@ -6,6 +6,7 @@
 using Azure.Messaging.ServiceBus;
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
 using Microsoft.Health.Dicom.Pin.Core.Models;
@@ -17,11 +18,13 @@ public class Worker : BackgroundService
     private readonly ServiceBusReceiver _orchestratorReceiver;
     private readonly ServiceBusSender _inferenceRequester;
     private readonly IMetadataStore _metadataStore;
+    private readonly ILogger<Worker> _logger;
 
-    public Worker(ServiceBusClient serviceBusClient, IMetadataStore metadataStore)
+    public Worker(ServiceBusClient serviceBusClient, IMetadataStore metadataStore, ILogger<Worker> logger)
     {
         EnsureArg.IsNotNull(serviceBusClient, nameof(serviceBusClient));
         _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
+        _logger = EnsureArg.IsNotNull(logger, nameof(logger));
 
         _orchestratorReceiver = serviceBusClient.CreateReceiver("OrchestratorRequest");
         _inferenceRequester = serviceBusClient.CreateSender("InferenceRequest");
@@ -50,7 +53,16 @@ public class Worker : BackgroundService
                 .Select(inferenceRequest => new ServiceBusMessage(BinaryData.FromObjectAsJson(inferenceRequest)))
                 .ToList();
 
-                await _inferenceRequester.SendMessagesAsync(inferenceRequests, stoppingToken);
+                if (inferenceRequests.Any())
+                {
+                    await _inferenceRequester.SendMessagesAsync(inferenceRequests, stoppingToken);
+                }
+                else
+                {
+                    _logger.LogInformation("No inferences found for account {AccountId}", orchestratorRequest.AccountId);
+                }
+
+                await _orchestratorReceiver.CompleteMessageAsync(receivedMessage, stoppingToken);
             }
             else
             {

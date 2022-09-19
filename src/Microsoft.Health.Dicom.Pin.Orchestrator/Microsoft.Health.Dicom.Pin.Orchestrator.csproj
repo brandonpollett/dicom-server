@@ -9,10 +9,17 @@
     <ItemGroup>
       <PackageReference Include="Ensure.That" />
       <PackageReference Include="Microsoft.Extensions.Hosting" />
-      <PackageReference Include="Azure.Messaging.ServiceBus" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.Core\Microsoft.Health.Dicom.Pin.Core.csproj" />
+      <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.CosmosDb\Microsoft.Health.Dicom.Pin.CosmosDb.csproj" />
+      <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
