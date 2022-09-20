@@ -1,8 +1,9 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
 public class ServiceBusOrchestratorStore : IOrchestratorStore
 {
     private readonly ServiceBusReceiver _orchestratorReceiver;
+    private readonly ServiceBusSender _orchestratorRequestSender;
     private readonly Dictionary<string, ServiceBusReceivedMessage> _processingMessages = new();
 
     public ServiceBusOrchestratorStore(ServiceBusClient serviceBusClient)
@@ -23,6 +25,7 @@ public class ServiceBusOrchestratorStore : IOrchestratorStore
         EnsureArg.IsNotNull(serviceBusClient, nameof(serviceBusClient));
 
         _orchestratorReceiver = serviceBusClient.CreateReceiver("OrchestratorRequest");
+        _orchestratorRequestSender = serviceBusClient.CreateSender("OrchestratorRequest");
     }
 
     public async Task<OrchestratorRequest> GetRequestAsync(CancellationToken cancellationToken)
@@ -41,6 +44,13 @@ public class ServiceBusOrchestratorStore : IOrchestratorStore
         _processingMessages.TryAdd(receivedMessage.MessageId, receivedMessage);
 
         return orchestratorRequest;
+    }
+
+    public async Task WriteRequestAsync(OrchestratorRequest orchestratorRequest, CancellationToken cancellationToken)
+    {
+        var serviceBusMessage = new ServiceBusMessage(BinaryData.FromObjectAsJson(orchestratorRequest));
+
+        await _orchestratorRequestSender.SendMessageAsync(serviceBusMessage, cancellationToken);
     }
 
     public async Task CompleteRequestAsync(OrchestratorRequest request, CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -16,6 +16,7 @@ using Microsoft.Health.Dicom.Core.Features.Store;
 using Microsoft.Health.Dicom.Core.Features.Validation;
 using Microsoft.Health.Dicom.Core.Features.Workitem;
 using Microsoft.Health.Dicom.Core.Features.Workitem.Model;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
 using Microsoft.Health.Dicom.Tests.Common;
 using NSubstitute;
 using Xunit;
@@ -41,7 +42,7 @@ public sealed class WorkitemServiceTests
         {
             _addDatasetValidator,
             _cancelDatasetValidator
-        }, _orchestrator, _logger);
+        }, _orchestrator, _logger, Substitute.For<ServiceBusOrchestratorStore>());
 
         _dataset.Add(DicomTag.ProcedureStepState, string.Empty);
     }

@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
 
 namespace Microsoft.Health.Dicom.Core.Features.Workitem;
 
@@ -19,17 +20,20 @@ public partial class WorkitemService : IWorkitemService
     private readonly IEnumerable<IWorkitemDatasetValidator> _validators;
     private readonly IWorkitemOrchestrator _workitemOrchestrator;
     private readonly ILogger _logger;
+    private readonly ServiceBusOrchestratorStore _serviceBusOrchestratorStore;
 
     public WorkitemService(
         IWorkitemResponseBuilder responseBuilder,
         IEnumerable<IWorkitemDatasetValidator> dicomDatasetValidators,
         IWorkitemOrchestrator workitemOrchestrator,
-        ILogger<WorkitemService> logger)
+        ILogger<WorkitemService> logger,
+        ServiceBusOrchestratorStore serviceBusOrchestratorStore)
     {
         _responseBuilder = EnsureArg.IsNotNull(responseBuilder, nameof(responseBuilder));
         _validators = EnsureArg.IsNotNull(dicomDatasetValidators, nameof(dicomDatasetValidators));
         _workitemOrchestrator = EnsureArg.IsNotNull(workitemOrchestrator, nameof(workitemOrchestrator));
         _logger = EnsureArg.IsNotNull(logger, nameof(logger));
+        _serviceBusOrchestratorStore = serviceBusOrchestratorStore;
     }
 
     private IWorkitemDatasetValidator GetValidator<T>() where T : IWorkitemDatasetValidator
