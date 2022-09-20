@@ -106,7 +106,7 @@ public class StoreService : IStoreService
                     _ = Task.Run(() => DisposeResourceAsync(capturedIndex), CancellationToken.None);
                 }
                 var dicomDataset = await _dicomInstanceEntries[index].GetDicomDatasetAsync(cancellationToken);
-                _autoInferenceInitiator.QueueInferenceRequest(dicomDataset);
+                await _autoInferenceInitiator.QueueInferenceRequestAsync(dicomDataset);
             }
         }
 

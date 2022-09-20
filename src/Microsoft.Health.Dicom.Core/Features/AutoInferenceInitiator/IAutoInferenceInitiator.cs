@@ -3,10 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using FellowOakDicom;
 
 namespace Microsoft.Health.Dicom.Core.Features;
 public interface IAutoInferenceInitiator
 {
-    void QueueInferenceRequest(DicomDataset dicomDataset);
+    Task QueueInferenceRequestAsync(DicomDataset dicomDataset);
 }

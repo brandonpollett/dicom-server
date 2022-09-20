@@ -5,36 +5,37 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Core.Extensions;
 using Microsoft.Health.Dicom.Core.Features.Routing;
 using Microsoft.Health.Dicom.Core.Features.Workitem;
-using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
+using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 
 namespace Microsoft.Health.Dicom.Core.Features;
 public class AutoInferenceInitiator : IAutoInferenceInitiator
 {
     private readonly IUrlResolver _urlResolver;
     private readonly IWorkitemService _workitemService;
-    private readonly ServiceBusOrchestratorStore _serviceBusOrchestratorStore;
+    private readonly IOrchestratorStore _serviceBusOrchestratorStore;
 
-    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService, ServiceBusOrchestratorStore serviceBusOrchestratorStore)
+    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService, IOrchestratorStore serviceBusOrchestratorStore)
     {
         _urlResolver = urlResolver;
         _workitemService = workitemService;
         _serviceBusOrchestratorStore = serviceBusOrchestratorStore;
     }
 
-    public async void QueueInferenceRequest(DicomDataset dicomDataset)
+    public async Task QueueInferenceRequestAsync(DicomDataset dicomDataset)
     {
         // todo check modality and body part before calling below
         EnsureArg.IsNotNull(dicomDataset);
         string workItemInstanceUid = DicomUID.Generate().UID;
-        await _workitemService.ProcessAddAsync(CreateWorkItemDataset(dicomDataset), workItemInstanceUid, cancellationToken: CancellationToken.None);
+        await _workitemService.ProcessAddAsync(CreateWorkItemDataset(dicomDataset, workItemInstanceUid), workItemInstanceUid, cancellationToken: CancellationToken.None);
     }
 
-    private DicomDataset CreateWorkItemDataset(DicomDataset inputDataset)
+    private DicomDataset CreateWorkItemDataset(DicomDataset inputDataset, string id)
     {
         var ds = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
 
@@ -42,7 +43,7 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         ds.Add(DicomTag.TransactionUID, string.Empty);
 
         ds.Add(DicomTag.SOPClassUID, DicomUID.Generate().UID);
-        ds.Add(DicomTag.SOPInstanceUID, DicomUID.Generate().UID);
+        ds.Add(DicomTag.SOPInstanceUID, id);
         ds.Add(new DicomSequence(DicomTag.ScheduledProcessingParametersSequence));
         ds.Add(new DicomSequence(DicomTag.ScheduledStationNameCodeSequence));
         ds.Add(new DicomSequence(DicomTag.ScheduledStationClassCodeSequence));
@@ -54,7 +55,6 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
                 { DicomTag.CodeMeaning, "CodeMeaning" }
             });
         ds.Add(new DicomSequence(DicomTag.ReferencedRequestSequence));
-        ds.Add(new DicomSequence(DicomTag.InputInformationSequence));
         ds.Add(DicomTag.PatientName, inputDataset.GetString(DicomTag.PatientName));
         ds.Add(DicomTag.IssuerOfPatientID, string.Empty);
         ds.Add(new DicomSequence(DicomTag.OtherPatientIDsSequence));
@@ -94,15 +94,15 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
 
         DicomDataset inputdataSet = new DicomDataset();
         DicomDataset inputwadodataSet = new DicomDataset();
-        inputwadodataSet.Add(DicomTag.RetrieveURI, wadoRSUrl);
-        inputdataSet.Add(DicomTag.WADORetrievalSequence, inputwadodataSet);
+        inputwadodataSet.Add(DicomTag.RetrieveURL, wadoRSUrl.AbsoluteUri);
+        inputdataSet.Add(DicomTag.WADORSRetrievalSequence, inputwadodataSet);
         ds.Add(new DicomSequence(DicomTag.InputInformationSequence, inputdataSet));
 
         DicomDataset outputdataSet = new DicomDataset();
         DicomDataset outputstowataSet = new DicomDataset();
-        outputstowataSet.Add(DicomTag.StorageURL, stowUrl);
+        outputstowataSet.Add(DicomTag.StorageURL, stowUrl.AbsoluteUri);
         outputdataSet.Add(DicomTag.STOWRSStorageSequence, outputstowataSet);
-        ds.Add(new DicomSequence(DicomTag.OutputDestinationSequence, inputdataSet));
+        ds.Add(new DicomSequence(DicomTag.OutputDestinationSequence, outputdataSet));
 
         return ds;
     }

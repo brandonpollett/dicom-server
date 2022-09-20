@@ -166,7 +166,8 @@ public class ServiceModule : IStartupModule
 
         services.Add<AutoInferenceInitiator>()
             .Scoped()
-            .AsSelf();
+            .AsSelf()
+            .AsImplementedInterfaces();
 
         AddExtendedQueryTagServices(services);
 
