@@ -5,7 +5,10 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Health.Extensions.DependencyInjection;
 using Microsoft.Health.Dicom.Pin.CosmosDb.Registration;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
@@ -21,6 +24,14 @@ internal static class Program
                 serviceCollection.AddCosmosDb(hostContext.Configuration);
                 serviceCollection.AddServiceBus(hostContext.Configuration);
                 serviceCollection.AddHttpClient();
+
+                serviceCollection.Add<JpegInferenceFactory>()
+                    .Singleton()
+                    .AsImplementedInterfaces();
+
+                serviceCollection.Add<UpsRsInputFactory>()
+                    .Singleton()
+                    .AsImplementedInterfaces();
             })
             .RunConsoleAsync();
 

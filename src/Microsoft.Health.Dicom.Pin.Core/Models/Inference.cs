@@ -14,4 +14,8 @@ public class Inference
     public string Name { get; set; }
 
     public Uri Uri { get; set; }
+
+    public InferenceType InferenceType { get; set; }
+
+    public InferenceInputType InferenceInputType { get; set; }
 }

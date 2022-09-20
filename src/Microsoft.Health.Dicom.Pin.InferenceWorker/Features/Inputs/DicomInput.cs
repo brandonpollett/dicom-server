@@ -3,15 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Pin.Core.Messages;
+using FellowOakDicom;
 
-public class InferenceRequest
+namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
+
+public class DicomInput
 {
-    public string MessageId { get; set; }
-    public string AccountId { get; set; }
-    public string InferenceId { get; set; }
-
-    public UpsRsRequestProperties RequestProperties { get; set; }
-
-    // public IRequestProperties RequestProperties { get; set; }
+    public DicomDataset Dataset { get; set; }
 }

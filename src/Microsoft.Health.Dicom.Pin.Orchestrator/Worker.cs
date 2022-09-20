@@ -42,9 +42,7 @@ public class Worker : BackgroundService
                 {
                     AccountId = orchestratorRequest.AccountId,
                     InferenceId = inference.Id,
-                    StudyUid = orchestratorRequest.StudyUid,
-                    SeriesUid = orchestratorRequest.SeriesUid,
-                    InstanceUid = orchestratorRequest.InstanceUid,
+                    RequestProperties = orchestratorRequest.RequestProperties,
                 })
                 .ToList();
 

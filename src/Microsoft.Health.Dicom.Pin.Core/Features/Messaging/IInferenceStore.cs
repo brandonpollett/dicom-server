@@ -15,11 +15,15 @@ public interface IInferenceStore
 
     Task<InferenceRequest> GetRequestAsync(CancellationToken cancellationToken);
 
+    Task DeadLetterRequestAsync(InferenceRequest inferenceRequest, CancellationToken cancellationToken);
+
     Task CompleteRequestAsync(InferenceRequest request, CancellationToken cancellationToken);
 
     Task WriteResponseAsync(InferenceResponse inferenceResponse, CancellationToken cancellationToken);
 
     Task<InferenceResponse> GetResponseAsync(CancellationToken cancellationToken);
+
+    Task DeadLetterResponseAsync(InferenceResponse inferenceResponse, CancellationToken cancellationToken);
 
     Task CompleteResponseAsync(InferenceResponse request, CancellationToken cancellationToken);
 }

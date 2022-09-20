@@ -5,24 +5,49 @@
 
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
 using Microsoft.Health.Dicom.Pin.Core.Models;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
 
 public class Worker : BackgroundService
 {
     private readonly IMetadataStore _metadataStore;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IInferenceStore _inferenceStore;
+    private readonly Dictionary<OrchestratorSourceType, IInputFactory> _inputFactories;
+    private readonly Dictionary<InferenceInputType, IInferenceFactory> _inferenceFactories;
+    private readonly ILogger<Worker> _logger;
 
-    public Worker(IMetadataStore metadataStore, IInferenceStore inferenceStore, IHttpClientFactory httpClientFactory)
+    public Worker(
+        IMetadataStore metadataStore,
+        IInferenceStore inferenceStore,
+        IEnumerable<IInputFactory> inputFactories,
+        IEnumerable<IInferenceFactory> inferenceFactories, ILogger<Worker> logger)
     {
         _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
         _inferenceStore = EnsureArg.IsNotNull(inferenceStore, nameof(inferenceStore));
-        _httpClientFactory = EnsureArg.IsNotNull(httpClientFactory, nameof(httpClientFactory));
+        EnsureArg.IsNotNull(inputFactories, nameof(inputFactories));
+        EnsureArg.IsNotNull(inferenceFactories, nameof(inferenceFactories));
+        _logger = EnsureArg.IsNotNull(logger, nameof(logger));
+
+        _inputFactories = new Dictionary<OrchestratorSourceType, IInputFactory>();
+
+        foreach (IInputFactory inputFactory in inputFactories)
+        {
+            _inputFactories.Add(inputFactory.OrchestratorSourceType, inputFactory);
+        }
+
+        _inferenceFactories = new Dictionary<InferenceInputType, IInferenceFactory>();
+
+        foreach (IInferenceFactory inferenceFactory in inferenceFactories)
+        {
+            _inferenceFactories.Add(inferenceFactory.InferenceInputType, inferenceFactory);
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,25 +58,35 @@ public class Worker : BackgroundService
 
             if (inferenceRequest != null)
             {
-                Inference inferenceItem = await _metadataStore.GetInferenceAsync(inferenceRequest.InferenceId, stoppingToken);
-
-                using HttpClient client = _httpClientFactory.CreateClient();
-                using var content = new StringContent(string.Empty);
-                HttpResponseMessage response = await client.PostAsync(inferenceItem.Uri, content, stoppingToken);
-
-                var inferenceResponse = new InferenceResponse
+                try
                 {
-                    AccountId = inferenceRequest.AccountId,
-                    InferenceId = inferenceRequest.InferenceId,
-                    InstanceUid = inferenceRequest.InstanceUid,
-                    SeriesUid = inferenceRequest.SeriesUid,
-                    StudyUid = inferenceRequest.StudyUid,
-                    StatusCode = response.StatusCode.ToString(),
-                };
+                    Inference inferenceItem = await _metadataStore.GetInferenceAsync(inferenceRequest.InferenceId, stoppingToken);
 
-                await _inferenceStore.WriteResponseAsync(inferenceResponse, stoppingToken);
+                    if (!_inputFactories.TryGetValue(inferenceRequest.RequestProperties.OrchestratorSourceType, out IInputFactory inputFactory))
+                    {
+                        throw new ArgumentOutOfRangeException($"No input factory for the type of {inferenceRequest.RequestProperties.OrchestratorSourceType}");
+                    }
 
-                await _inferenceStore.CompleteRequestAsync(inferenceRequest, stoppingToken);
+                    if (!_inferenceFactories.TryGetValue(inferenceItem.InferenceInputType, out IInferenceFactory inferenceFactory))
+                    {
+                        throw new ArgumentOutOfRangeException($"No inference factory for the type of {inferenceItem.InferenceInputType}");
+                    }
+
+                    DicomInput input = await inputFactory.RetrieveAsync(inferenceRequest.RequestProperties, stoppingToken);
+
+                    InferenceResponse inferenceResponse = await inferenceFactory.ExecuteInferenceAsync(input, inferenceRequest, inferenceItem, stoppingToken);
+
+                    await _inferenceStore.WriteResponseAsync(inferenceResponse, stoppingToken);
+
+                    await _inferenceStore.CompleteRequestAsync(inferenceRequest, stoppingToken);
+                }
+#pragma warning disable CA1031
+                catch (Exception ex)
+#pragma warning restore CA1031
+                {
+                    _logger.LogError(ex, "Exception encountered while doing inference worker");
+                    await _inferenceStore.DeadLetterRequestAsync(inferenceRequest, stoppingToken);
+                }
             }
             else
             {
