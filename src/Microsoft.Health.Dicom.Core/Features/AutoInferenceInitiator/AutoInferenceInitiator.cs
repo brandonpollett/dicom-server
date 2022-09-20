@@ -5,6 +5,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Core.Extensions;
@@ -26,7 +27,7 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         _orchestratorStore = orchestratorStore;
     }
 
-    public async void QueueInferenceRequest(DicomDataset dicomDataset)
+    public async Task QueueInferenceRequestAsync(DicomDataset dicomDataset)
     {
         // todo check modality and body part before calling below
         EnsureArg.IsNotNull(dicomDataset);
