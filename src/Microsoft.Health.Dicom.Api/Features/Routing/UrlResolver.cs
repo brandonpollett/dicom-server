@@ -5,6 +5,7 @@
 
 using System;
 using EnsureThat;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -41,7 +42,9 @@ public sealed class UrlResolver : IUrlResolver
 
     public Uri ResolveBaseUri()
     {
-        return new Uri(UrlHelper.Content("~"));
+        HttpRequest request = _httpContextAccessor.HttpContext.Request;
+
+        return new Uri(request.GetUri().GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped));
     }
 
     /// <inheritdoc />
