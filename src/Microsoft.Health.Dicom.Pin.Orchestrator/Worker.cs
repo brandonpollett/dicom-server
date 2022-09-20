@@ -55,6 +55,8 @@ public class Worker : BackgroundService
                     _logger.LogInformation("No inferences found for account {AccountId}", orchestratorRequest.AccountId);
                 }
 
+
+                _logger.LogInformation("Successfully executed orchestration for {AccountId} on {MessageId}", orchestratorRequest.AccountId, orchestratorRequest.MessageId);
                 await _orchestratorStore.CompleteRequestAsync(orchestratorRequest, stoppingToken);
             }
             else

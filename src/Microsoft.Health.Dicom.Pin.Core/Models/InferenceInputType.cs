@@ -10,4 +10,5 @@ public enum InferenceInputType
     None,
     Jpeg = 1,
     Dcm = 2,
+    Png = 3,
 }

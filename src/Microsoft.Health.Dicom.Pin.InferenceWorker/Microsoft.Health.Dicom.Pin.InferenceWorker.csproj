@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Ensure.That" />
     <PackageReference Include="fo-dicom" />
+    <PackageReference Include="fo-dicom.Imaging.ImageSharp" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Azure.Messaging.ServiceBus" />

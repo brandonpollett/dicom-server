@@ -3,6 +3,8 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Health.Extensions.DependencyInjection;
@@ -29,9 +31,15 @@ internal static class Program
                     .Singleton()
                     .AsImplementedInterfaces();
 
+                serviceCollection.Add<PngInferenceFactory>()
+                    .Singleton()
+                    .AsImplementedInterfaces();
+
                 serviceCollection.Add<UpsRsInputFactory>()
                     .Singleton()
                     .AsImplementedInterfaces();
+
+                serviceCollection.AddImageManager<ImageSharpImageManager>();
             })
             .RunConsoleAsync();
 
