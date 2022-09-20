@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -33,6 +33,8 @@ public partial class WorkitemService
         {
             await AddWorkitemAsync(dataset, cancellationToken).ConfigureAwait(false);
         }
+
+        await _serviceBusOrchestratorStore.WriteRequestAsync(new Pin.Core.Messages.OrchestratorRequest { WorkItemId = workitemInstanceUid }, CancellationToken.None);
 
         return _responseBuilder.BuildAddResponse();
     }

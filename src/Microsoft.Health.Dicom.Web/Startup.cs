@@ -1,13 +1,15 @@
-﻿// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 using Microsoft.AspNetCore.Builder;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Health.Development.IdentityProvider.Registration;
 using Microsoft.Health.Dicom.Core.Features.Security;
 using Microsoft.Health.Dicom.Functions.Client;
+using Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
 
 namespace Microsoft.Health.Dicom.Web;
 
@@ -39,6 +41,8 @@ public class Startup
             .AddAzureFunctionsClient(Configuration)
             .AddBackgroundWorkers()
             .AddHostedServices();
+
+        services.AddServiceBus(Configuration);
 
         AddApplicationInsightsTelemetry(services);
     }

@@ -32,8 +32,6 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         EnsureArg.IsNotNull(dicomDataset);
         string workItemInstanceUid = DicomUID.Generate().UID;
         await _workitemService.ProcessAddAsync(CreateWorkItemDataset(dicomDataset), workItemInstanceUid, cancellationToken: CancellationToken.None);
-
-        await _serviceBusOrchestratorStore.WriteRequestAsync(new Pin.Core.Messages.OrchestratorRequest { WorkItemId = workItemInstanceUid }, CancellationToken.None);
     }
 
     private DicomDataset CreateWorkItemDataset(DicomDataset inputDataset)
