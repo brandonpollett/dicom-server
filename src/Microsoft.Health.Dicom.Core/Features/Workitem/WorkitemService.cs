@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -9,7 +9,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
-using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
+using Microsoft.Health.Dicom.Core.Features.Routing;
+using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 
 namespace Microsoft.Health.Dicom.Core.Features.Workitem;
 
@@ -20,20 +21,23 @@ public partial class WorkitemService : IWorkitemService
     private readonly IEnumerable<IWorkitemDatasetValidator> _validators;
     private readonly IWorkitemOrchestrator _workitemOrchestrator;
     private readonly ILogger _logger;
-    private readonly ServiceBusOrchestratorStore _serviceBusOrchestratorStore;
+    private readonly IOrchestratorStore _orchestratorStore;
+    private readonly IUrlResolver _urlResolver;
 
     public WorkitemService(
         IWorkitemResponseBuilder responseBuilder,
         IEnumerable<IWorkitemDatasetValidator> dicomDatasetValidators,
         IWorkitemOrchestrator workitemOrchestrator,
         ILogger<WorkitemService> logger,
-        ServiceBusOrchestratorStore serviceBusOrchestratorStore)
+        IOrchestratorStore iOrchestratorStore,
+        IUrlResolver urlResolver)
     {
         _responseBuilder = EnsureArg.IsNotNull(responseBuilder, nameof(responseBuilder));
         _validators = EnsureArg.IsNotNull(dicomDatasetValidators, nameof(dicomDatasetValidators));
         _workitemOrchestrator = EnsureArg.IsNotNull(workitemOrchestrator, nameof(workitemOrchestrator));
         _logger = EnsureArg.IsNotNull(logger, nameof(logger));
-        _serviceBusOrchestratorStore = serviceBusOrchestratorStore;
+        _orchestratorStore = EnsureArg.IsNotNull(iOrchestratorStore, nameof(iOrchestratorStore));
+        _urlResolver = EnsureArg.IsNotNull(urlResolver, nameof(urlResolver));
     }
 
     private IWorkitemDatasetValidator GetValidator<T>() where T : IWorkitemDatasetValidator

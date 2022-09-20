@@ -12,4 +12,6 @@ public interface IOrchestratorStore
     Task<OrchestratorRequest> GetRequestAsync(CancellationToken cancellationToken);
 
     Task CompleteRequestAsync(OrchestratorRequest request, CancellationToken cancellationToken);
+
+    Task WriteRequestAsync(OrchestratorRequest orchestratorRequest, CancellationToken cancellationToken);
 }

@@ -13,11 +13,9 @@ public class InferenceResponse
 
     public string InferenceId { get; set; }
 
-    public string StudyUid { get; set; }
+    public UpsRsRequestProperties RequestProperties { get; set; }
 
-    public string SeriesUid { get; set; }
-
-    public string InstanceUid { get; set; }
+    // public IRequestProperties RequestProperties { get; set; }
 
     /// <summary>
     /// Throw away status code just so there is something in the response.
