@@ -5,13 +5,17 @@
 
 namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
-public class InferenceRequest
+public class UpsRsRequestProperties : IRequestProperties
 {
-    public string MessageId { get; set; }
-    public string AccountId { get; set; }
-    public string InferenceId { get; set; }
+    public UpsRsRequestProperties(Uri serverAddress, string instanceId)
+    {
+        ServerAddress = serverAddress;
+        InstanceId = instanceId;
+    }
 
-    public UpsRsRequestProperties RequestProperties { get; set; }
+    public OrchestratorSourceType OrchestratorSourceType { get; } = OrchestratorSourceType.UpsRs;
 
-    // public IRequestProperties RequestProperties { get; set; }
+    public Uri ServerAddress { get; }
+
+    public string InstanceId { get; }
 }

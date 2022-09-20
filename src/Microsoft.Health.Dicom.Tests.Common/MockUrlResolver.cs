@@ -13,6 +13,8 @@ namespace Microsoft.Health.Dicom.Tests.Common;
 
 public class MockUrlResolver : IUrlResolver
 {
+    public Uri ResolveBaseUri() => throw new NotImplementedException();
+
     public Uri ResolveOperationStatusUri(Guid operationId)
     {
         return new Uri("/" + operationId.ToString(OperationId.FormatSpecifier), UriKind.Relative);

@@ -31,6 +31,7 @@ public class ServiceBusOrchestratorStore : IOrchestratorStore
     public async Task<OrchestratorRequest> GetRequestAsync(CancellationToken cancellationToken)
     {
         ServiceBusReceivedMessage receivedMessage = await _orchestratorReceiver.ReceiveMessageAsync(cancellationToken: cancellationToken);
+
         OrchestratorRequest orchestratorRequest = null;
 
         if (receivedMessage == null)

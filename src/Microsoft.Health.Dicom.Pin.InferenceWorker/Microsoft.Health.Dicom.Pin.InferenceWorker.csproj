@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Ensure.That" />
+    <PackageReference Include="fo-dicom" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Azure.Messaging.ServiceBus" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.Dicom.Client\Microsoft.Health.Dicom.Client.csproj" />
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.Core\Microsoft.Health.Dicom.Pin.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.CosmosDb\Microsoft.Health.Dicom.Pin.CosmosDb.csproj" />
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj" />

@@ -64,6 +64,16 @@ public class ServiceBusInferenceStore : IInferenceStore
         return inferenceRequest;
     }
 
+    public async Task DeadLetterRequestAsync(InferenceRequest inferenceRequest, CancellationToken cancellationToken)
+    {
+        EnsureArg.IsNotNull(inferenceRequest, nameof(inferenceRequest));
+
+        if (_processingMessages.TryGetValue(inferenceRequest.MessageId, out ServiceBusReceivedMessage message))
+        {
+            await _inferenceRequestReceiver.DeadLetterMessageAsync(message, cancellationToken: cancellationToken);
+        }
+    }
+
     public async Task CompleteRequestAsync(InferenceRequest request, CancellationToken cancellationToken)
     {
         EnsureArg.IsNotNull(request, nameof(request));
@@ -96,6 +106,16 @@ public class ServiceBusInferenceStore : IInferenceStore
         _processingMessages.TryAdd(receivedMessage.MessageId, receivedMessage);
 
         return inferenceResponse;
+    }
+
+    public async Task DeadLetterResponseAsync(InferenceResponse inferenceResponse, CancellationToken cancellationToken)
+    {
+        EnsureArg.IsNotNull(inferenceResponse, nameof(inferenceResponse));
+
+        if (_processingMessages.TryGetValue(inferenceResponse.MessageId, out ServiceBusReceivedMessage message))
+        {
+            await _inferenceRequestReceiver.DeadLetterMessageAsync(message, cancellationToken: cancellationToken);
+        }
     }
 
     public async Task CompleteResponseAsync(InferenceResponse request, CancellationToken cancellationToken)

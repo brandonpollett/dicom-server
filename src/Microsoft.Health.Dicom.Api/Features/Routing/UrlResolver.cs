@@ -39,6 +39,11 @@ public sealed class UrlResolver : IUrlResolver
 
     private IUrlHelper UrlHelper => _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
 
+    public Uri ResolveBaseUri()
+    {
+        return new Uri(UrlHelper.Content("~"));
+    }
+
     /// <inheritdoc />
     public Uri ResolveOperationStatusUri(Guid operationId)
     {

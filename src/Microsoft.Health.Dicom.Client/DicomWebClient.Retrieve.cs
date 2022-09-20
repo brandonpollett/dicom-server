@@ -180,7 +180,7 @@ public partial class DicomWebClient : IDicomWebClient
             });
     }
 
-    private async Task<DicomWebResponse<DicomFile>> RetrieveInstanceAsync(
+    public async Task<DicomWebResponse<DicomFile>> RetrieveInstanceAsync(
         Uri requestUri,
         string dicomTransferSyntax,
         CancellationToken cancellationToken)
@@ -210,7 +210,7 @@ public partial class DicomWebClient : IDicomWebClient
             });
     }
 
-    private async Task<DicomWebAsyncEnumerableResponse<DicomFile>> RetrieveInstancesAsync(
+    public async Task<DicomWebAsyncEnumerableResponse<DicomFile>> RetrieveInstancesAsync(
         Uri requestUri,
         string dicomTransferSyntax,
         CancellationToken cancellationToken)
