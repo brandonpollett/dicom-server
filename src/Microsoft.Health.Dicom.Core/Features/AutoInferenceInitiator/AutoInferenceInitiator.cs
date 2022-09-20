@@ -10,20 +10,20 @@ using FellowOakDicom;
 using Microsoft.Health.Dicom.Core.Extensions;
 using Microsoft.Health.Dicom.Core.Features.Routing;
 using Microsoft.Health.Dicom.Core.Features.Workitem;
-using Microsoft.Health.Dicom.Pin.ServiceBus.Features.Orchestrator;
+using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 
 namespace Microsoft.Health.Dicom.Core.Features;
 public class AutoInferenceInitiator : IAutoInferenceInitiator
 {
     private readonly IUrlResolver _urlResolver;
     private readonly IWorkitemService _workitemService;
-    private readonly ServiceBusOrchestratorStore _serviceBusOrchestratorStore;
+    private readonly IOrchestratorStore _orchestratorStore;
 
-    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService, ServiceBusOrchestratorStore serviceBusOrchestratorStore)
+    public AutoInferenceInitiator(IUrlResolver urlResolver, IWorkitemService workitemService, IOrchestratorStore orchestratorStore)
     {
         _urlResolver = urlResolver;
         _workitemService = workitemService;
-        _serviceBusOrchestratorStore = serviceBusOrchestratorStore;
+        _orchestratorStore = orchestratorStore;
     }
 
     public async void QueueInferenceRequest(DicomDataset dicomDataset)

@@ -41,14 +41,14 @@ public class UpsRsInputFactory : IInputFactory
 
         DicomSequence inputSequence = workItem.GetSequence(DicomTag.InputInformationSequence);
 
-        var retrieveUrls = inputSequence.Items.Select(i => i.GetString(DicomTag.RetrieveURL)).ToList();
+        var retrieveUrls = inputSequence.Items.Select(i => new Uri(i.GetString(DicomTag.RetrieveURI))).ToList();
 
         if (!retrieveUrls.Any())
         {
             throw new InvalidOperationException("No retrieve urls found in the ups rs work item");
         }
 
-        DicomWebAsyncEnumerableResponse<DicomFile> dicomFileResponse = await dicomWebClient.RetrieveInstancesAsync(new Uri(retrieveUrls[0]), "*", cancellationToken);
+        DicomWebAsyncEnumerableResponse<DicomFile> dicomFileResponse = await dicomWebClient.RetrieveInstancesAsync(retrieveUrls[0], "*", cancellationToken);
 
         if (!dicomFileResponse.IsSuccessStatusCode)
         {

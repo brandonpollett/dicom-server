@@ -13,6 +13,8 @@ namespace Microsoft.Health.Dicom.Core.Features.Routing;
 /// </summary>
 public interface IUrlResolver
 {
+    Uri ResolveBaseUri();
+
     /// <summary>
     /// Resolves the URI for retrieving the status of an operation.
     /// </summary>

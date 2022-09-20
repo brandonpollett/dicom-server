@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ using Microsoft.Health.Dicom.Core.Exceptions;
 using Microsoft.Health.Dicom.Core.Features.Store;
 using Microsoft.Health.Dicom.Core.Features.Store.Entries;
 using Microsoft.Health.Dicom.Core.Messages.Workitem;
+using Microsoft.Health.Dicom.Pin.Core.Messages;
 
 namespace Microsoft.Health.Dicom.Core.Features.Workitem;
 
@@ -34,7 +35,12 @@ public partial class WorkitemService
             await AddWorkitemAsync(dataset, cancellationToken).ConfigureAwait(false);
         }
 
-        await _serviceBusOrchestratorStore.WriteRequestAsync(new Pin.Core.Messages.OrchestratorRequest { WorkItemId = workitemInstanceUid }, CancellationToken.None);
+        await _orchestratorStore.WriteRequestAsync(
+            new OrchestratorRequest
+            {
+                OrchestratorSourceType = OrchestratorSourceType.UpsRs,
+                RequestProperties = new UpsRsRequestProperties(_urlResolver.ResolveBaseUri(), workitemInstanceUid),
+            }, CancellationToken.None);
 
         return _responseBuilder.BuildAddResponse();
     }
