@@ -41,7 +41,14 @@ public class UpsRsInputFactory : IInputFactory
 
         DicomSequence inputSequence = workItem.GetSequence(DicomTag.InputInformationSequence);
 
-        var retrieveUrls = inputSequence.Items.Select(i => new Uri(i.GetString(DicomTag.RetrieveURI))).ToList();
+        var wadoSequences = inputSequence.FirstOrDefault()?.GetSequence(DicomTag.WADORetrievalSequence);
+
+        if (wadoSequences == null)
+        {
+            throw new InvalidOperationException("Unable to obtain any WADORetrievalSequence");
+        }
+
+        var retrieveUrls = wadoSequences.Items.Select(i => new Uri(i.GetString(DicomTag.RetrieveURI))).ToList();
 
         if (!retrieveUrls.Any())
         {
