@@ -19,7 +19,7 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        await Host.CreateDefaultBuilder(args)
+        IHostBuilder builder = Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, serviceCollection) =>
             {
                 serviceCollection.AddHostedService<Worker>();
@@ -39,9 +39,17 @@ internal static class Program
                     .Singleton()
                     .AsImplementedInterfaces();
 
-                serviceCollection.AddImageManager<ImageSharpImageManager>();
+                serviceCollection
+                    .AddFellowOakDicom()
+                    .AddImageManager<ImageSharpImageManager>();
             })
-            .RunConsoleAsync();
+            .UseConsoleLifetime();
+
+        IHost host = builder.Build();
+
+        DicomSetupBuilder.UseServiceProvider(host.Services);
+
+        await host.RunAsync();
 
         return 0;
     }

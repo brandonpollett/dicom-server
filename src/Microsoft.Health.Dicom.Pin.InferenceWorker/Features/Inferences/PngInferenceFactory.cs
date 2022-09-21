@@ -10,6 +10,7 @@ using Microsoft.Health.Dicom.Pin.Core.Models;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using IImage = FellowOakDicom.Imaging.IImage;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
 
@@ -30,12 +31,11 @@ public class PngInferenceFactory : IInferenceFactory
         EnsureArg.IsNotNull(inferenceRequest, nameof(inferenceRequest));
         EnsureArg.IsNotNull(inference, nameof(inference));
 
-        DicomImage image = new DicomImage(dicomInput.Dataset);
-        var renderedImage = image.RenderImage();
-        Image<Bgra32> imageSharpImage = renderedImage.AsSharpImage();
+        var image = new DicomImage(dicomInput.Dataset);
+        Image<Bgra32> renderedImage = image.RenderImage().AsSharpImage();
 
         using var pngStream = new MemoryStream();
-        await imageSharpImage.SaveAsPngAsync(pngStream, cancellationToken);
+        await renderedImage.SaveAsPngAsync(pngStream, cancellationToken);
 
         using HttpClient client = _httpClientFactory.CreateClient();
         using var content = new StringContent(string.Empty);
