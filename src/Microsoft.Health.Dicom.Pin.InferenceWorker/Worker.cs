@@ -79,12 +79,13 @@ public class Worker : BackgroundService
                     await _inferenceStore.WriteResponseAsync(inferenceResponse, stoppingToken);
 
                     await _inferenceStore.CompleteRequestAsync(inferenceRequest, stoppingToken);
+                    _logger.LogInformation("Successfully executed inference for {InferenceId} on {MessageId}", inferenceItem.Id, inferenceRequest.MessageId);
                 }
 #pragma warning disable CA1031
                 catch (Exception ex)
 #pragma warning restore CA1031
                 {
-                    _logger.LogError(ex, "Exception encountered while doing inference worker");
+                    _logger.LogError(ex, "Exception encountered while doing inference worker for {InferenceId} on {MessageId}", inferenceRequest.InferenceId, inferenceRequest.MessageId);
                     await _inferenceStore.DeadLetterRequestAsync(inferenceRequest, stoppingToken);
                 }
             }

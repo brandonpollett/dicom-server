@@ -3,6 +3,8 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Health.Extensions.DependencyInjection;
@@ -17,7 +19,7 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        await Host.CreateDefaultBuilder(args)
+        IHostBuilder builder = Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, serviceCollection) =>
             {
                 serviceCollection.AddHostedService<Worker>();
@@ -29,11 +31,25 @@ internal static class Program
                     .Singleton()
                     .AsImplementedInterfaces();
 
+                serviceCollection.Add<PngInferenceFactory>()
+                    .Singleton()
+                    .AsImplementedInterfaces();
+
                 serviceCollection.Add<UpsRsInputFactory>()
                     .Singleton()
                     .AsImplementedInterfaces();
+
+                serviceCollection
+                    .AddFellowOakDicom()
+                    .AddImageManager<ImageSharpImageManager>();
             })
-            .RunConsoleAsync();
+            .UseConsoleLifetime();
+
+        IHost host = builder.Build();
+
+        DicomSetupBuilder.UseServiceProvider(host.Services);
+
+        await host.RunAsync();
 
         return 0;
     }
