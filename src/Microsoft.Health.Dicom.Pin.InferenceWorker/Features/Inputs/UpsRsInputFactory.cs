@@ -19,7 +19,7 @@ public class UpsRsInputFactory : IInputFactory
         _httpClientFactory = EnsureArg.IsNotNull(httpClientFactory, nameof(httpClientFactory));
     }
 
-    public OrchestratorSourceType OrchestratorSourceType { get; } = OrchestratorSourceType.UpsRs;
+    public OrchestratorDataType OrchestratorDataType { get; } = OrchestratorDataType.UpsRs;
 
     public async Task<DicomInput> RetrieveAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken)
     {
@@ -65,6 +65,6 @@ public class UpsRsInputFactory : IInputFactory
         var enumerator = dicomFileResponse.GetAsyncEnumerator(cancellationToken);
         await enumerator.MoveNextAsync();
         DicomFile dicomFile = enumerator.Current;
-        return new DicomInput { Dataset = dicomFile.Dataset };
+        return new DicomInput { DicomFile = dicomFile };
     }
 }

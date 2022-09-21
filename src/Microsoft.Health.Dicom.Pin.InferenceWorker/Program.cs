@@ -12,6 +12,7 @@ using Microsoft.Health.Dicom.Pin.CosmosDb.Registration;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.ServiceBus.Registration;
+using Microsoft.Health.Dicom.Pin.Storage.Registration;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
 
@@ -25,13 +26,18 @@ internal static class Program
                 serviceCollection.AddHostedService<Worker>();
                 serviceCollection.AddCosmosDb(hostContext.Configuration);
                 serviceCollection.AddServiceBus(hostContext.Configuration);
+                serviceCollection.AddStorage(hostContext.Configuration);
                 serviceCollection.AddHttpClient();
 
-                serviceCollection.Add<JpegInferenceFactory>()
+                serviceCollection.Add<JpegInferenceDataFactory>()
                     .Singleton()
                     .AsImplementedInterfaces();
 
-                serviceCollection.Add<PngInferenceFactory>()
+                serviceCollection.Add<PngInferenceDataFactory>()
+                    .Singleton()
+                    .AsImplementedInterfaces();
+
+                serviceCollection.Add<DcmInferenceDataFactory>()
                     .Singleton()
                     .AsImplementedInterfaces();
 

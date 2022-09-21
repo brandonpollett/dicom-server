@@ -78,10 +78,15 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         ds.Add(new DicomSequence(DicomTag.HumanPerformerCodeSequence));
         ds.Add(DicomTag.HumanPerformerName, "AI");
         ds.Add(DicomTag.TypeOfInstances, "SAMPLETYPEOFINST");
+
+        var instanceIdentifier = inputDataset.ToInstanceIdentifier();
+
         ds.Add(DicomTag.ReferencedSOPSequence, new DicomDataset
         {
-            { DicomTag.ReferencedSOPClassUID, inputDataset.GetString(DicomTag.SOPClassUID) },
-            { DicomTag.ReferencedSOPInstanceUID, inputDataset.GetString(DicomTag.SOPInstanceUID) },
+            //{ DicomTag.ReferencedSOPClassUID, inputDataset.GetString(DicomTag.SOPClassUID) },
+            { DicomTag.ReferencedSOPClassUID, "1.2.840.10008.5.1.4.1.1.1" },
+            //{ DicomTag.ReferencedSOPInstanceUID, inputDataset.GetString(DicomTag.SOPInstanceUID) },
+            { DicomTag.ReferencedSOPInstanceUID, instanceIdentifier.StudyInstanceUid },
         });
 
         // add ups-rs fields needed for AI
@@ -89,7 +94,6 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         ds.Add(DicomTag.ScheduledProcedureStepPriority, "Normal");
         ds.Add(new DicomSequence(DicomTag.ScheduledWorkitemCodeSequence));
 
-        var instanceIdentifier = inputDataset.ToInstanceIdentifier();
         string wadoRsUrl = _urlResolver.ResolveRetrieveInstanceUri(instanceIdentifier).ToString();
         string stowUrl = _urlResolver.ResolveRetrieveStudyUri(instanceIdentifier.StudyInstanceUid).ToString();
 

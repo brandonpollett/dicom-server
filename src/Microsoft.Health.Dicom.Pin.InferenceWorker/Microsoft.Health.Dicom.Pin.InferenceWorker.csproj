@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.Core\Microsoft.Health.Dicom.Pin.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.CosmosDb\Microsoft.Health.Dicom.Pin.CosmosDb.csproj" />
     <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj" />
+    <ProjectReference Include="..\Microsoft.Health.Dicom.Pin.Storage\Microsoft.Health.Dicom.Pin.Storage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,13 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.Dicom.Pin.Core.Messages;
+namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
-namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
-
-public interface IInputFactory
+public enum OrchestratorDataType
 {
-    OrchestratorDataType OrchestratorDataType { get; }
-
-    Task<DicomInput> RetrieveAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken);
+    None,
+    UpsRs = 1
 }

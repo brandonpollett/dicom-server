@@ -3,6 +3,8 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using Microsoft.Health.Dicom.Pin.Core.Models;
+
 namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
 public class InferenceResponse
@@ -20,5 +22,7 @@ public class InferenceResponse
     /// <summary>
     /// Throw away status code just so there is something in the response.
     /// </summary>
-    public string StatusCode { get; set; }
+    public string FileName { get; set; }
+
+    public InferenceDataType OutputDataType { get; set; }
 }

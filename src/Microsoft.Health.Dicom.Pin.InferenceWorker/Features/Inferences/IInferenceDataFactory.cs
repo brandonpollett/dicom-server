@@ -3,10 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Pin.Core.Messages;
+using Microsoft.Health.Dicom.Pin.Core.Models;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
-public enum OrchestratorSourceType
+namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
+
+public interface IInferenceDataFactory
 {
-    None,
-    UpsRs = 1
+    InferenceDataType InferenceDataType { get; }
+
+    Task<Stream> GetDataAsync(DicomInput input, CancellationToken cancellationToken);
 }
