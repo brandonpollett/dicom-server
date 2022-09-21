@@ -3,13 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.Dicom.Pin.Core.Messages;
+namespace Microsoft.Health.Dicom.Pin.Core.Features.TempFiles;
 
-namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
-
-public interface IInputFactory
+public interface ITempFileStore
 {
-    OrchestratorDataType OrchestratorDataType { get; }
+    Task<string> Save(Stream stream, CancellationToken cancellationToken);
 
-    Task<DicomInput> RetrieveAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken);
+    Task<Stream> Retrieve(string fileName, CancellationToken cancellationToken);
 }

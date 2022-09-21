@@ -3,19 +3,17 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Pin.Core.Messages;
+using Microsoft.Health.Dicom.Pin.Core.Messages;
+using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
-public class UpsRsRequestProperties : IRequestProperties
+namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Outputs;
+
+public class UpsRsOutputFactory : IOutputFactory
 {
-    public UpsRsRequestProperties(Uri serverAddress, string instanceId)
-    {
-        ServerAddress = serverAddress;
-        InstanceId = instanceId;
-    }
-
     public OrchestratorDataType OrchestratorDataType { get; } = OrchestratorDataType.UpsRs;
 
-    public Uri ServerAddress { get; }
-
-    public string InstanceId { get; }
+    public Task<DicomInput> WriteAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

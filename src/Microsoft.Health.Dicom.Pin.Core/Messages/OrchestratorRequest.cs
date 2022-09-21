@@ -14,7 +14,7 @@ public class OrchestratorRequest
 
     public string AccountId { get; set; }
 
-    public OrchestratorSourceType OrchestratorSourceType { get; set; }
+    public OrchestratorDataType OrchestratorInputDataType { get; set; }
 
     //public IRequestProperties RequestProperties { get; set; }
 

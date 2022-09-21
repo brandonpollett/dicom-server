@@ -38,7 +38,7 @@ public partial class WorkitemService
         await _orchestratorStore.WriteRequestAsync(
             new OrchestratorRequest
             {
-                OrchestratorSourceType = OrchestratorSourceType.UpsRs,
+                OrchestratorInputDataType = OrchestratorDataType.UpsRs,
                 AccountId = "171fbbb4-1c44-4a72-bee3-ec72f20f2a72",
                 RequestProperties = new UpsRsRequestProperties(_urlResolver.ResolveBaseUri(), workitemInstanceUid),
             }, CancellationToken.None);

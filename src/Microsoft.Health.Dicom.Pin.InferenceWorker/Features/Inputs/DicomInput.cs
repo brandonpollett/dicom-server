@@ -9,5 +9,5 @@ namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
 public class DicomInput
 {
-    public DicomDataset Dataset { get; set; }
+    public DicomFile DicomFile { get; set; }
 }

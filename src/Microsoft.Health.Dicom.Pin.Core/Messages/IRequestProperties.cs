@@ -7,5 +7,5 @@ namespace Microsoft.Health.Dicom.Pin.Core.Messages;
 
 public interface IRequestProperties
 {
-    OrchestratorSourceType OrchestratorSourceType { get; }
+    OrchestratorDataType OrchestratorDataType { get; }
 }

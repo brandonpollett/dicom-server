@@ -10,16 +10,19 @@ using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
 
-public class JpegInferenceFactory : IInferenceFactory
+public class JpegInferenceDataFactory : IInferenceDataFactory
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public JpegInferenceFactory(IHttpClientFactory httpClientFactory)
+    public JpegInferenceDataFactory(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = EnsureArg.IsNotNull(httpClientFactory, nameof(httpClientFactory));
     }
 
-    public InferenceInputType InferenceInputType { get; } = InferenceInputType.Jpeg;
+    public InferenceDataType InferenceDataType { get; } = InferenceDataType.Jpeg;
+    public Task<Stream> GetDataAsync(DicomInput input, CancellationToken cancellationToken) => throw new NotImplementedException();
+
+    public Task<T> CreateAsync<T>(Stream stream, CancellationToken cancellationToken) => throw new NotImplementedException();
 
     public async Task<InferenceResponse> ExecuteInferenceAsync(DicomInput dicomInput, InferenceRequest inferenceRequest, Inference inference, CancellationToken cancellationToken)
     {
@@ -36,7 +39,6 @@ public class JpegInferenceFactory : IInferenceFactory
             AccountId = inferenceRequest.AccountId,
             InferenceId = inferenceRequest.InferenceId,
             RequestProperties = inferenceRequest.RequestProperties,
-            StatusCode = response.StatusCode.ToString(),
         };
     }
 }

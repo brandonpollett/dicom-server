@@ -87,6 +87,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.ServiceBus", "src\Microsoft.Health.Dicom.Pin.ServiceBus\Microsoft.Health.Dicom.Pin.ServiceBus.csproj", "{50054045-54A8-434F-B56B-661607197A41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Dicom.Pin.Storage", "src\Microsoft.Health.Dicom.Pin.Storage\Microsoft.Health.Dicom.Pin.Storage.csproj", "{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -225,6 +227,10 @@ Global
 		{50054045-54A8-434F-B56B-661607197A41}.Debug|x64.Build.0 = Debug|x64
 		{50054045-54A8-434F-B56B-661607197A41}.Release|x64.ActiveCfg = Release|x64
 		{50054045-54A8-434F-B56B-661607197A41}.Release|x64.Build.0 = Release|x64
+		{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C}.Debug|x64.ActiveCfg = Debug|x64
+		{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C}.Debug|x64.Build.0 = Debug|x64
+		{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C}.Release|x64.ActiveCfg = Release|x64
+		{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,6 +268,7 @@ Global
 		{A5CC1DDE-522D-4A3D-9FDD-A3A4FAE79B24} = {AEDC6C96-15FF-4AFB-BD49-3549211AACCF}
 		{072E03F0-1C97-4FAE-8E0B-6144395806C0} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 		{50054045-54A8-434F-B56B-661607197A41} = {176641B3-297C-4E04-A83D-8F80F80485E8}
+		{F5E9BBD9-B844-4458-98CF-FFE0FEB6AF3C} = {176641B3-297C-4E04-A83D-8F80F80485E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_SortFileContentOnSave = True

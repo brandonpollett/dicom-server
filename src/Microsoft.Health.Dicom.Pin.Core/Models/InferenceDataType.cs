@@ -5,19 +5,10 @@
 
 namespace Microsoft.Health.Dicom.Pin.Core.Models;
 
-public class Inference
+public enum InferenceDataType
 {
-    public string Id { get; set; }
-
-    public string AccountId { get; set; }
-
-    public string Name { get; set; }
-
-    public Uri Uri { get; set; }
-
-    public InferenceType InferenceType { get; set; }
-
-    public InferenceDataType InferenceInputDataType { get; set; }
-
-    public InferenceDataType InferenceOutputDataType { get; set; }
+    None,
+    Jpeg = 1,
+    Dcm = 2,
+    Png = 3,
 }
