@@ -69,7 +69,7 @@ public class UpsRsOutputFactory : IOutputFactory
         ds.Add(DicomTag.SOPInstanceUID, DicomUIDGenerator.GenerateDerivedFromUUID());
         ds.Add(DicomTag.SOPClassUID, DicomUIDGenerator.GenerateDerivedFromUUID());
         ds.Add(DicomTag.PatientID, "123456");
-        ds.Add(DicomTag.PatientName, "test1");
+        ds.Add(DicomTag.PatientName, workItem.GetString(DicomTag.PatientName));
         ds.Add(DicomTag.Modality, "AIINFERENCE");
         ds.Add(DicomTag.StudyDate, "20211204");
         ds.Add(DicomTag.ContentDate, "20211204");
