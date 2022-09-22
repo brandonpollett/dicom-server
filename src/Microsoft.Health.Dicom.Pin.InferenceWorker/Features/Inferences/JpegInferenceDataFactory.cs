@@ -3,6 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.Core.Messages;

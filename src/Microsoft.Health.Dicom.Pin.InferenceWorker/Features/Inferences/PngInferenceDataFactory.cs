@@ -3,6 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.Core.Models;
@@ -19,6 +24,7 @@ public class PngInferenceDataFactory : IInferenceDataFactory
     }
 
     public InferenceDataType InferenceDataType { get; } = InferenceDataType.Png;
+
     public Task<Stream> GetDataAsync(DicomInput input, CancellationToken cancellationToken) => throw new NotImplementedException();
 
     public Task<T> CreateAsync<T>(Stream stream, CancellationToken cancellationToken) => throw new NotImplementedException();

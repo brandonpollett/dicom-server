@@ -3,6 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;

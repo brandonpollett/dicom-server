@@ -3,11 +3,15 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
-using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Features.Outputs;
 using Microsoft.Health.Dicom.Pin.Core.Features.TempFiles;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
@@ -16,23 +20,17 @@ namespace Microsoft.Health.Dicom.Pin.Orchestrator;
 
 public class OutgoingWorker : BackgroundService
 {
-    private readonly IMetadataStore _metadataStore;
-    private readonly IOrchestratorStore _orchestratorStore;
     private readonly IInferenceStore _inferenceStore;
     private readonly ITempFileStore _tempFileStore;
     private readonly ILogger<OutgoingWorker> _logger;
     private readonly Dictionary<OrchestratorDataType, IOutputFactory> _outputFactories;
 
     public OutgoingWorker(
-        IMetadataStore metadataStore,
-        IOrchestratorStore orchestratorStore,
         IInferenceStore inferenceStore,
         ITempFileStore tempFileStore,
         IEnumerable<IOutputFactory> outputFactories,
         ILogger<OutgoingWorker> logger)
     {
-        _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
-        _orchestratorStore = EnsureArg.IsNotNull(orchestratorStore, nameof(orchestratorStore));
         _inferenceStore = EnsureArg.IsNotNull(inferenceStore, nameof(inferenceStore));
         _tempFileStore = EnsureArg.IsNotNull(tempFileStore, nameof(tempFileStore));
         EnsureArg.IsNotNull(outputFactories, nameof(outputFactories));
@@ -77,7 +75,6 @@ public class OutgoingWorker : BackgroundService
             else
             {
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
-
             }
         }
     }

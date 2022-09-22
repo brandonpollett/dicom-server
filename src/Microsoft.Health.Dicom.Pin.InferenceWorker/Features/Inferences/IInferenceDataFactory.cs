@@ -3,6 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.Core.Models;
 
