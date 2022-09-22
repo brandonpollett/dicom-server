@@ -32,6 +32,11 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         // todo check modality and body part before calling below
         EnsureArg.IsNotNull(dicomDataset);
         string workItemInstanceUid = DicomUID.Generate().UID;
+
+        if (dicomDataset.GetString(DicomTag.Modality) == "AIINFERENCE")
+        {
+            return;
+        }
         await _workitemService.ProcessAddAsync(CreateWorkItemDataset(dicomDataset, workItemInstanceUid), workItemInstanceUid, cancellationToken: CancellationToken.None);
     }
 
