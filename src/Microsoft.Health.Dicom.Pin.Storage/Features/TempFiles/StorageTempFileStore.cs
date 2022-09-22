@@ -23,9 +23,10 @@ public class StorageTempFileStore : ITempFileStore
         _containerClient = EnsureArg.IsNotNull(containerClient, nameof(containerClient));
     }
 
-    public async Task<string> Save(Stream stream, CancellationToken cancellationToken)
+    public async Task<string> Save(Stream stream, string extension, CancellationToken cancellationToken)
     {
-        var fileName = Guid.NewGuid().ToString();
+        var fileName = $"{Guid.NewGuid()}.{extension}";
+
         BlobClient blob = _containerClient.GetBlobClient(fileName);
 
         await blob.UploadAsync(stream, cancellationToken: cancellationToken);

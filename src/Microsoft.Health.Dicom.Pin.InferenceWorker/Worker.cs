@@ -3,7 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Globalization;
 using EnsureThat;
+using SixLabors.ImageSharp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
@@ -13,6 +15,8 @@ using Microsoft.Health.Dicom.Pin.Core.Messages;
 using Microsoft.Health.Dicom.Pin.Core.Models;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
 
@@ -87,37 +91,28 @@ public class Worker : BackgroundService
 
                     var data = await inferenceInputFactory.GetDataAsync(input, stoppingToken);
 
+#pragma warning disable CA2000  // "Using" statement present
                     using HttpClient client = _httpClientFactory.CreateClient();
 
-                    byte[] buffer = new byte[data.Length];
+                    using var multipartFormContent = new MultipartFormDataContent();
 
-                    string fileName;
-                    using (var multipartFormContent = new MultipartFormDataContent())
-                    {
-                        //Load the file and set the file's Content-Type header
-                        using var fileStreamContent = new StreamContent(data);
-                        //fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    //Load the file and set the file's Content-Type header
+                    using var fileStreamContent = new StreamContent(data);
+#pragma warning disable CA2000
 
-                        //Add the file
-                        multipartFormContent.Add(fileStreamContent, name: "image", fileName: "example.dcm");
+                    //Add the file
+                    multipartFormContent.Add(fileStreamContent, name: "image", fileName: "example.dcm");
 
-                        //Send it
-                        var response = await client.PostAsync(inferenceItem.Uri, multipartFormContent, cancellationToken: stoppingToken);
+                    //Send it
+                    var response = await client.PostAsync(inferenceItem.Uri, multipartFormContent, cancellationToken: stoppingToken);
 
-                        fileName = await _tempFileStore.Save(await response.Content.ReadAsStreamAsync(stoppingToken), stoppingToken);
-                    }
-                    // _ = await data.ReadAsync(buffer, stoppingToken);
-                    // using var content = JsonContent.Create(new
-                    // {
-                    //     Image = buffer
-                    // });
-                    //
-                    // using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, inferenceItem.Uri);
-                    // request.Headers.Add("Accept", "application/json");
-                    // request.Content = content;
-                    // HttpResponseMessage response = await client.SendAsync(request, stoppingToken);
+                    Image image = await GenerateImage(response, stoppingToken);
 
+                    using var imageStream = new MemoryStream();
+                    await image.SaveAsync(imageStream, new PngEncoder(), stoppingToken);
+                    imageStream.Seek(0, SeekOrigin.Begin);
 
+                    string fileName = await _tempFileStore.Save(imageStream, "png", stoppingToken);
 
                     var inferenceResponse = new InferenceResponse
                     {
@@ -146,5 +141,34 @@ public class Worker : BackgroundService
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
         }
+    }
+
+    private async Task<Image> GenerateImage(HttpResponseMessage response, CancellationToken stoppingToken)
+    {
+        var responseString = await response.Content.ReadAsStringAsync(stoppingToken);
+        byte[] test = new byte[65536];
+
+        var splitArray = responseString.Replace("\"", "", StringComparison.Ordinal).Replace("[", "", StringComparison.Ordinal).Replace("]", "", StringComparison.Ordinal).Replace(" ", "", StringComparison.Ordinal).Split(",");
+
+        int index = 0;
+        try
+        {
+            for (int i = 0; i < test.Length; i++)
+            {
+                test[i] = byte.Parse(splitArray[i], CultureInfo.InvariantCulture);
+                index++;
+            }
+
+        }
+#pragma warning disable CA1031
+        catch (Exception ex)
+#pragma warning restore CA1031
+        {
+            _logger.LogError(ex, "Error building byte array.");
+        }
+
+        var greyImg = Image.LoadPixelData<L8>(test, 256, 256);
+
+        return greyImg;
     }
 }

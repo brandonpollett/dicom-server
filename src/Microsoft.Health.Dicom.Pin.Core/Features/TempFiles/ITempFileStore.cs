@@ -7,7 +7,7 @@ namespace Microsoft.Health.Dicom.Pin.Core.Features.TempFiles;
 
 public interface ITempFileStore
 {
-    Task<string> Save(Stream stream, CancellationToken cancellationToken);
+    Task<string> Save(Stream stream, string extension, CancellationToken cancellationToken);
 
     Task<Stream> Retrieve(string fileName, CancellationToken cancellationToken);
 }
