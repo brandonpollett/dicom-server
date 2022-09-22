@@ -13,14 +13,14 @@ using Microsoft.Health.Dicom.Pin.Core.Models;
 
 namespace Microsoft.Health.Dicom.Pin.Orchestrator;
 
-public class Worker : BackgroundService
+public class IncomingWorker : BackgroundService
 {
     private readonly IMetadataStore _metadataStore;
     private readonly IOrchestratorStore _orchestratorStore;
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<IncomingWorker> _logger;
     private readonly IInferenceStore _inferenceStore;
 
-    public Worker(IMetadataStore metadataStore, IOrchestratorStore orchestratorStore, IInferenceStore inferenceStore, ILogger<Worker> logger)
+    public IncomingWorker(IMetadataStore metadataStore, IOrchestratorStore orchestratorStore, IInferenceStore inferenceStore, ILogger<IncomingWorker> logger)
     {
         _metadataStore = EnsureArg.IsNotNull(metadataStore, nameof(metadataStore));
         _orchestratorStore = EnsureArg.IsNotNull(orchestratorStore, nameof(orchestratorStore));

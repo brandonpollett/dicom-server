@@ -4,13 +4,12 @@
 // -------------------------------------------------------------------------------------------------
 
 using Microsoft.Health.Dicom.Pin.Core.Messages;
-using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
 
-namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Outputs;
+namespace Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 
-public interface IOutputFactory
+public interface IInputFactory
 {
     OrchestratorDataType OrchestratorDataType { get; }
 
-    Task<DicomInput> WriteAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken);
+    Task<DicomInput> RetrieveAsync(UpsRsRequestProperties requestProperties, CancellationToken cancellationToken);
 }

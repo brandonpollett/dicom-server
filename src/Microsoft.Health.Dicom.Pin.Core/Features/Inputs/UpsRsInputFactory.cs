@@ -6,6 +6,7 @@
 using EnsureThat;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Client;
+using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;

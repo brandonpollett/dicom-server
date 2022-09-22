@@ -114,7 +114,7 @@ public class ServiceBusInferenceStore : IInferenceStore
 
         if (_processingMessages.TryGetValue(inferenceResponse.MessageId, out ServiceBusReceivedMessage message))
         {
-            await _inferenceRequestReceiver.DeadLetterMessageAsync(message, cancellationToken: cancellationToken);
+            await _inferenceResponseReceiver.DeadLetterMessageAsync(message, cancellationToken: cancellationToken);
         }
     }
 

@@ -37,6 +37,7 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
 
     private DicomDataset CreateWorkItemDataset(DicomDataset inputDataset, string workItemInstanceUid)
     {
+        var instanceIdentifier = inputDataset.ToInstanceIdentifier();
         var ds = new DicomDataset(DicomTransferSyntax.ExplicitVRLittleEndian);
 
         ds = ds.NotValidated();
@@ -54,7 +55,13 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
             {
                 { DicomTag.CodeMeaning, "CodeMeaning" }
             });
-        ds.Add(new DicomSequence(DicomTag.ReferencedRequestSequence));
+
+        ds.Add(new DicomSequence(
+            DicomTag.ReferencedRequestSequence,
+            new DicomDataset(
+                new DicomShortString(DicomTag.StudyInstanceUID, instanceIdentifier.StudyInstanceUid)
+                )
+            ));
 
         ds.Add(DicomTag.PatientName, inputDataset.GetString(DicomTag.PatientName));
         ds.Add(DicomTag.IssuerOfPatientID, string.Empty);
@@ -79,7 +86,6 @@ public class AutoInferenceInitiator : IAutoInferenceInitiator
         ds.Add(DicomTag.HumanPerformerName, "AI");
         ds.Add(DicomTag.TypeOfInstances, "SAMPLETYPEOFINST");
 
-        var instanceIdentifier = inputDataset.ToInstanceIdentifier();
 
         ds.Add(DicomTag.ReferencedSOPSequence, new DicomDataset
         {

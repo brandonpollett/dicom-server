@@ -5,7 +5,7 @@
 
 using EnsureThat;
 using Microsoft.Health.Dicom.Pin.Core.Models;
-using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
+using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
 

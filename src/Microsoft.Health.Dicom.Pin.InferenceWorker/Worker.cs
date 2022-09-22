@@ -8,14 +8,13 @@ using EnsureThat;
 using SixLabors.ImageSharp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Dicom.Pin.Core.Features.Inputs;
 using Microsoft.Health.Dicom.Pin.Core.Features.Messaging;
 using Microsoft.Health.Dicom.Pin.Core.Features.Metadata;
 using Microsoft.Health.Dicom.Pin.Core.Features.TempFiles;
 using Microsoft.Health.Dicom.Pin.Core.Messages;
 using Microsoft.Health.Dicom.Pin.Core.Models;
 using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inferences;
-using Microsoft.Health.Dicom.Pin.InferenceWorker.Features.Inputs;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace Microsoft.Health.Dicom.Pin.InferenceWorker;
@@ -106,13 +105,17 @@ public class Worker : BackgroundService
                     //Send it
                     var response = await client.PostAsync(inferenceItem.Uri, multipartFormContent, cancellationToken: stoppingToken);
 
-                    Image image = await GenerateImage(response, stoppingToken);
+                    // Image image = await GenerateImage(response, stoppingToken);
+                    //
+                    // using var imageStream = new MemoryStream();
+                    // await image.SaveAsync(imageStream, new PngEncoder(), stoppingToken);
+                    // imageStream.Seek(0, SeekOrigin.Begin);
 
-                    using var imageStream = new MemoryStream();
-                    await image.SaveAsync(imageStream, new PngEncoder(), stoppingToken);
-                    imageStream.Seek(0, SeekOrigin.Begin);
+                    var byteArray = await GetBytes(response, stoppingToken);
+                    var memoryStream = new MemoryStream(byteArray);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
 
-                    string fileName = await _tempFileStore.Save(imageStream, "png", stoppingToken);
+                    string fileName = await _tempFileStore.SaveAsync(memoryStream, "dat", stoppingToken);
 
                     var inferenceResponse = new InferenceResponse
                     {
@@ -145,6 +148,15 @@ public class Worker : BackgroundService
 
     private async Task<Image> GenerateImage(HttpResponseMessage response, CancellationToken stoppingToken)
     {
+        byte[] test = await GetBytes(response, stoppingToken);
+
+        var greyImg = Image.LoadPixelData<L8>(test, 256, 256);
+
+        return greyImg;
+    }
+
+    private async Task<byte[]> GetBytes(HttpResponseMessage response, CancellationToken stoppingToken)
+    {
         var responseString = await response.Content.ReadAsStringAsync(stoppingToken);
         byte[] test = new byte[65536];
 
@@ -158,7 +170,6 @@ public class Worker : BackgroundService
                 test[i] = byte.Parse(splitArray[i], CultureInfo.InvariantCulture);
                 index++;
             }
-
         }
 #pragma warning disable CA1031
         catch (Exception ex)
@@ -167,8 +178,6 @@ public class Worker : BackgroundService
             _logger.LogError(ex, "Error building byte array.");
         }
 
-        var greyImg = Image.LoadPixelData<L8>(test, 256, 256);
-
-        return greyImg;
+        return test;
     }
 }

@@ -23,7 +23,7 @@ public class StorageTempFileStore : ITempFileStore
         _containerClient = EnsureArg.IsNotNull(containerClient, nameof(containerClient));
     }
 
-    public async Task<string> Save(Stream stream, string extension, CancellationToken cancellationToken)
+    public async Task<string> SaveAsync(Stream stream, string extension, CancellationToken cancellationToken)
     {
         var fileName = $"{Guid.NewGuid()}.{extension}";
 
@@ -34,7 +34,7 @@ public class StorageTempFileStore : ITempFileStore
         return fileName;
     }
 
-    public async Task<Stream> Retrieve(string fileName, CancellationToken cancellationToken)
+    public async Task<Stream> RetrieveAsync(string fileName, CancellationToken cancellationToken)
     {
         BlobClient blob = _containerClient.GetBlobClient(fileName);
 
