@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Microsoft.Health.Dicom.Pin.Orchestrator": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

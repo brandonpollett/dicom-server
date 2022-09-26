@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Microsoft.Health.Dicom.Pin.InferenceWorker": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

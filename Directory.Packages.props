@@ -1,5 +1,4 @@
 <Project>
-
   <ItemGroup>
     <PackageVersion Include="Azure.Core" Version="1.25.0" />
     <PackageVersion Include="Azure.Data.Tables" Version="12.6.1" />
@@ -90,6 +89,9 @@
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="Microsoft.SqlServer.DACFx" Version="160.6161.0" />
     <PackageVersion Include="Microsoft.TestPlatform.ObjectModel" Version="17.3.1" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets">
+      <Version>1.17.0</Version>
+    </PackageVersion>
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="NSubstitute" Version="4.4.0" />
     <PackageVersion Include="Polly" Version="7.2.3" />
@@ -103,5 +105,4 @@
     <PackageVersion Include="xunit.assert" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
-
 </Project>
